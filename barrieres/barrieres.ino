@@ -14,8 +14,12 @@ int pos = 0;
 int DistanceDeclanchement = 20;
 int pinEcho1 = A0;
 int pinTrig1 = A1;
-long temps;
-float distance;
+long temps1;
+float distance1;
+int pinEcho2 = A2;
+int pinTrig2 = A3;
+long temps2;
+float distance2;
 int LV = 8;
 int LR = 7;
 
@@ -64,14 +68,32 @@ int MesureEntree () {
   delayMicroseconds(10);
   digitalWrite(pinTrig1, LOW);
 
-  temps = pulseIn(pinEcho1, HIGH);
+  temps1 = pulseIn(pinEcho1, HIGH);
 
-  temps = temps / 2;
-  distance = (temps * 340) / 10000.0;
-  Serial.print("Distance: ");
-  Serial.print(distance);
+  temps1 = temps1 / 2;
+  distance1 = (temps1 * 340) / 10000.0;
+  Serial.print("Distance Entrée: ");
+  Serial.print(distance1);
   Serial.println(" cm");
 }
+
+
+int MesureSortie () {
+  digitalWrite(pinTrig2, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(pinTrig2, LOW);
+
+  temps2 = pulseIn(pinEcho2, HIGH);
+
+  temps2 = temps2 / 2;
+  distance2 = (temps2 * 340) / 10000.0;
+  Serial.print("Distance Sortie: ");
+  Serial.print(distance2);
+  Serial.println(" cm");
+}
+
+
+
 /*********************************************************
 
 
@@ -89,7 +111,10 @@ void setup() {
   */
   pinMode(A1, OUTPUT);
   pinMode(pinEcho1, INPUT);
-
+  pinMode(pinTrig2, OUTPUT);
+  pinMode(pinEcho2, INPUT);  
+  
+  digitalWrite(pinTrig1, LOW);
   digitalWrite(pinTrig1, LOW);
   Serial.begin(9600);
   myservo.attach(9);
@@ -103,7 +128,8 @@ void setup() {
 
 void loop() {
   MesureEntree() ;
-  if (distance < DistanceDeclanchement) {
+  MesureSortie() ;
+  if (distance1 < DistanceDeclanchement or distance2 < DistanceDeclanchement) {
     if (IsOpening == false) {
       if (BarriereOuverte == false) {
         OuvrirBarriere ();
@@ -116,5 +142,5 @@ void loop() {
     FermeBarriere ();
     myservo.write(0);
   }
-  delay(1000);
-}
+  delay(500);
+    }
