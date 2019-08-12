@@ -10,5 +10,3 @@ In the folder inserted the folder Servo and HCSR04_ultrasonic_sensor
 
 
 
-
-© PsewGeek09
