@@ -1,93 +1,92 @@
 #include <HCSR04.h> //inclusion des libraries
 #include <Servo.h>
 
-  HCSR04 hc1(A0,A1);//déclaration des broches des capteurs a ultrason
-  HCSR04 hc2(A2,A3);
+HCSR04 hc1(A0, A1); //déclaration des broches des capteurs a ultrason
+HCSR04 hc2(A2, A3);
 
-  Servo myservo;
+Servo myservo;
 
-  bool BarriereOuverte; //Déclaration des variables
-  bool IsOpening;
-  int AngleOuvert = 180; //A vérifier
-  int AngleFermer = 0;
-  int DistanceDeclanchement = 20;
-  int pinTrig1 = A1;
-  int pinEcho1 = A0;
-  long temps;
-  float distance;
-  int pos = 0;
-  int LV = 8;
-  int LR = 7;
-  
+bool BarriereOuverte; //Déclaration des variables
+bool IsOpening;
+int AngleOuvert = 180; //A vérifier
+int AngleFermer = 0;
+int pos = 0;
+int DistanceDeclanchement = 20;
+int pinEcho1 = A0;
+int pinTrig1 = A1;
+long temps;
+float distance;
+int LV = 8;
+int LR = 7;
 
-  void OuvrirBarriere (){
-    if (BarriereOuverte == false){
-      IsOpening = true;
-      int AngleBarriere = AngleFermer;
-        while (AngleBarriere < AngleOuvert){
-          digitalWrite(LV, HIGH);
-          delay(10);
-          digitalWrite(LV, LOW);
-          AngleBarriere ++;
-          myservo.write(AngleBarriere);
-        }
-        BarriereOuverte = true;
-        IsOpening = false;
-        digitalWrite(LR, HIGH);
-        digitalWrite(LV, LOW);
-     }
+
+void OuvrirBarriere () {
+  if (BarriereOuverte == false) {
+    IsOpening = true;
+    int AngleBarriere = AngleFermer;
+    while (AngleBarriere < AngleOuvert) {
+      digitalWrite(LV, HIGH);
+      delay(10);
+      digitalWrite(LV, LOW);
+      AngleBarriere ++;
+      myservo.write(AngleBarriere);
+    }
+    BarriereOuverte = true;
+    IsOpening = false;
+    digitalWrite(LR, HIGH);
+    digitalWrite(LV, LOW);
   }
+}
 
 
-  void FermeBarriere () {
-  if (BarriereOuverte = true){
+void FermeBarriere () {
+  if (BarriereOuverte = true) {
     IsOpening = true;
     int AngleBarriere = AngleOuvert;
-      while (AngleBarriere > AngleFermer){
+    while (AngleBarriere > AngleFermer) {
       delay(10);
       AngleBarriere --;
       myservo.write(AngleBarriere);
-      }
-  BarriereOuverte = false;
-  IsOpening = false;
-  digitalWrite(LV, HIGH);
-  digitalWrite(LR, LOW);
-  
-  }
-  
-  
+    }
+    BarriereOuverte = false;
+    IsOpening = false;
+    digitalWrite(LV, HIGH);
+    digitalWrite(LR, LOW);
+
   }
 
 
-  int MesureEntree (){
-    digitalWrite(pinTrig1, HIGH);        
+}
+
+
+int MesureEntree () {
+  digitalWrite(pinTrig1, HIGH);
   delayMicroseconds(10);
   digitalWrite(pinTrig1, LOW);
 
-  temps = pulseIn(pinEcho1, HIGH);    
+  temps = pulseIn(pinEcho1, HIGH);
 
-    temps = temps/2;
-    distance = (temps*340)/10000.0;                  
-    Serial.print("Distance: ");
-    Serial.print(distance);
-    Serial.println(" cm");
-    delay(1000);
-  }
+  temps = temps / 2;
+  distance = (temps * 340) / 10000.0;
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+}
 /*********************************************************
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- */
+
+
+
+
+
+
+
+
+
+*/
 void setup() {
   /*************************************
-   * setup pour la mesure de la distance
-   */
+     setup pour la mesure de la distance
+  */
   pinMode(A1, OUTPUT);
   pinMode(pinEcho1, INPUT);
 
@@ -103,19 +102,19 @@ void setup() {
 }
 
 void loop() {
-MesureEntree() ;
-  if(distance < DistanceDeclanchement){
-    if(IsOpening == false){
-      if(BarriereOuverte == false){
+  MesureEntree() ;
+  if (distance < DistanceDeclanchement) {
+    if (IsOpening == false) {
+      if (BarriereOuverte == false) {
         OuvrirBarriere ();
       }
-      
+
     }
+
   }
-      else{
-       if( BarriereOuverte == true){
-        FermeBarriere ();
-        myservo.write(0);
-       }
-      }
+  else if ( BarriereOuverte == true) {
+    FermeBarriere ();
+    myservo.write(0);
+  }
+  delay(1000);
 }
